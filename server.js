@@ -10,9 +10,14 @@ connectDB();
 app.use(express.json());
 // creer le middlew ware de express 
 app.use("/api/user", require("./router/auth"));
+app.use("/api/admin", require("./router/admin/admin"));
+app.use("/api/category", require("./router/category"));
 app.use("/api/product", require("./router/product"));
+//app.use("/api/user/cart", require("./router/cart"));
 
-//app.use("/api/product", require("./router/product"));
+
+
+
 
 
 

@@ -1,6 +1,6 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
-const isAuth = async (req, res, next) => {
+exports.isAuth = async (req, res, next) => {
   try {
     //    import token
     // headers=> authorization
@@ -16,7 +16,7 @@ const isAuth = async (req, res, next) => {
     if (!user) {
       return res
         .status(401)
-        .send({ errors: [{ msg: "you are not authorized2" }] });
+        .send({ errors: [{ msg: "you are not authorized" }] });
     }
 
     // si non
@@ -24,10 +24,39 @@ const isAuth = async (req, res, next) => {
     req.user = user;
     // next
     next();
+
   } catch (error) {
     res.status(401).send({ errors: [{ msg: "you are not authorized" }] });
   }
 };
 
-module.exports = isAuth;
+exports.userMiddleware= (req, res, next)=>{
+  try {
+    if(req.user.role !== "user"){
+      return res
+      .status(401)
+      .send({ errors: [{ msg: "access denied" }] });
+    }
+    next()
+  } catch (error) {
+    res.status(401).send({ errors: [{ msg: "you are not authorized" }] });
+  }
+};
+
+exports.adminMiddleware= (req, res, next)=>{
+try {
+  if(req.user.role !== "admin"){
+    return res
+    .status(401)
+    .send({ errors: [{ msg: "access denied" }] });
+  }
+  next()
+} catch (error) {
+  console.log(error)
+  res.status(401).send({ errors: [{ msg: "you are not authorized" }] });
+}
+};
+
+
+
 

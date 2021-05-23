@@ -1,21 +1,30 @@
-//const express= require ("express");
-//const router = express.Router(); 
-//router.post("/create" , Create);
-const Create = require ('../controllers/product.controllers')
-const express = require("express");
-const router = express.Router();
-const Product = require('../models/Product')
 
-router.post("/create", async(req,res)=>{
-    try {
-        const product = new Product({...req.body})
-            
-        const createdProduct = await product.save();
-        res.status(200).send({ msg: "created succ", product: product});
-  } catch (error) {
-    console.log(error)
-    res.status(500).send({ errors: [{ msg: "fail to create product" }] });
-  }
-});
-    
+const express = require("express");
+const { createProduct } = require("../controllers/product.controllers");
+const { isAuth } = require("../middleware/isAuth");
+const router = express.Router();
+const multer = require('multer');
+const shortid = require("shortid");
+const path = require ('path');
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, path.join(path.dirname(__dirname), "uploads")); // uploads the folder that i went my images to be stored in
+    },
+    filename: function (req, file, cb) {
+      cb(null, shortid.generate() + "-" + file.originalname);
+    },
+  });
+  
+  const upload = multer({ storage });
+  
+
+
+router.post("/create",isAuth, upload.single('productImage'), createProduct)
+
+
+
+//router.get("/get", getCartegories);
+
+  
 module.exports = router;

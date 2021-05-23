@@ -6,23 +6,11 @@ const categorySchema= new Schema({
       required: true,
       trim: true,
     },
-    slug: {
+    description: {
       type: String,
       required: true,
-      unique: true,
-    },
-    type: {
-      type: String,
-    },
-    categoryImage: { type: String },
-    parentId: {
-      type: String,
-    },
-    createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
+      trim: true,
+    }
   },
   { timestamps: true }
 );

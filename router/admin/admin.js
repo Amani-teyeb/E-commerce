@@ -1,8 +1,8 @@
 //importer express pour creer les routes
 const express = require("express");
-const { Register, login } = require("../controllers/auth.controllers");
-const { validation, registerValidate, loginValidate } = require("../middleware/validateUser");
-const {isAuth} = require("../middleware/isAuth");
+const { Register, login } = require("../../controllers/admin/admin.controllers")
+const { validation, registerValidate, loginValidate } = require("../../middleware/validateUser");
+//const isAuth = require("../middleware/isAuth");
 
 //const { Register } = require("../controllers/user.controllers");
 const router = express.Router();
@@ -33,8 +33,8 @@ router.post("/login",loginValidate() ,validation ,login);
 @ parameter: req.headers  
 public
 */
-router.get("/current", isAuth, (req, res) => {
+/*router.get("/current", isAuth, (req, res) => {
     res.send({ msg: "authorized", user: req.user });
-  });
+  });*/
   
 module.exports = router;

@@ -1,11 +1,11 @@
-const User = require("../models/User");
+const User = require("../../models/User");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const jwt = require("jsonwebtoken");
 exports.Register = async (req, res) => {
     try {
       // req.body= name , email , password , phone
-      const { email, password } = req.body;
+      const {Firstname, Lastname, email, password } = req.body;
       // test email
       const findUser = await User.findOne({ email });
       // email should be unique
@@ -15,7 +15,13 @@ exports.Register = async (req, res) => {
           .send({ errors: [{ msg: "email should be unique" }] });
       }
       // new user
-      const newUser = new User({ ...req.body });
+      const newUser = new User({
+        Firstname,
+        Lastname,
+        email,
+        password,
+        role: "admin"
+      });
       // hachage de passeword 
       const hashedpassword = await bcrypt.hash(password, saltRounds);
       newUser.password = hashedpassword;
@@ -30,10 +36,10 @@ exports.Register = async (req, res) => {
       process.env.SECRET_KEY,
       { expiresIn: "24h" }
     );
-      res.status(200).send({ msg: "register succ", user: newUser, token});
+      res.status(200).send({ msg: "Admin already registered", user: newUser, token});
   } catch (error) {
     console.log(error);
-    res.status(500).send({ errors: [{ msg: "user not saved" }] });
+    res.status(500).send({ errors: [{ msg: "admin not saved" }] });
   }
 };
 
@@ -49,20 +55,21 @@ exports.login= async(req,res)=>{
    } 
    // else verify password
   const comparePass = await bcrypt.compare(password, findUser.password);
-  if (!comparePass){
+  if (!comparePass || findUser.role !== "admin"){
     return res.status(400).send({errors:[{msg:"bad credential"}]})
   }
   // create token 
   const token = jwt.sign(
     {
       id: findUser._id,
+      role: findUser.role 
     },
     process.env.SECRET_KEY,
     { expiresIn: "3h" }
   );
   res.status(200).send({msg:"login succ", user: findUser, token})
   } catch (error) {
-    res.status(500).send({errors:[{msg:"you can't login"}]})
+    res.status(500).send({errors:[{msg:"Something went wrong"}]})
     console.log(error)
   }
 }
